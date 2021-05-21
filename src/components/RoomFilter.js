@@ -2,7 +2,6 @@ import React from 'react';
 import { useContext } from 'react';
 import { RoomContext } from '../context';
 import Title from '../components/Title';
-import { findByLabelText } from '@testing-library/dom';
 
 // get all unique values
 const getUnique = (items, value) => {

@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import items from './data';
+// import items from './data';
+import Client from './contentful';
+
+// Client.getEntries({ content_type: 'hotelResort' }).then((response) => console.log(response.items));
 const RoomContext = React.createContext();
 class RoomProvider extends Component {
   state = {
@@ -19,20 +22,30 @@ class RoomProvider extends Component {
     pets: false,
   };
 
+  // getData from contenful function
+  getData = async () => {
+    try {
+      let response = await Client.getEntries({ content_type: 'hotelResort', order: 'sys.createdAt' });
+      let rooms = this.formatData(response.items);
+      let featuredRooms = rooms.filter((room) => room.featured === true);
+      let maxPrice = Math.max(...rooms.map((item) => item.price));
+      let maxSize = Math.max(...rooms.map((item) => item.size));
+      this.setState({
+        featuredRooms,
+        sortedRooms: rooms,
+        rooms,
+        loading: false,
+        price: maxPrice,
+        maxSize,
+        maxPrice,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   componentDidMount() {
-    let rooms = this.formatData(items);
-    let featuredRooms = rooms.filter((room) => room.featured === true);
-    let maxPrice = Math.max(...rooms.map((item) => item.price));
-    let maxSize = Math.max(...rooms.map((item) => item.size));
-    this.setState({
-      featuredRooms,
-      sortedRooms: rooms,
-      rooms,
-      loading: false,
-      price: maxPrice,
-      maxSize,
-      maxPrice,
-    });
+    this.getData();
   }
 
   formatData(items) {
